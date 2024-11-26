@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Réseau Social de Luxe</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fffaf0;
+            color: #4a4a4a;
+        }
+        header {
+            background-color: #ffffff;
+            border-bottom: 2px solid #d4af37;
+            color: #4a4a4a;
+            text-align: center;
+            padding: 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 30px auto;
+            background: #ffffff;
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            color: #d4af37;
+            text-align: center;
+            font-size: 1.8em;
+        }
+        input, button, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border: 1px solid #d4af37;
+            font-size: 1em;
+            font-family: 'Georgia', serif;
+        }
+        input:focus, textarea:focus {
+            border-color: #f4d03f;
+            outline: none;
+            box-shadow: 0 0 10px #f4d03f;
+        }
+        button {
+            background-color: #d4af37;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        button:hover {
+            background-color: #c49a2c;
+        }
+        .post {
+            border-bottom: 1px solid #d4af37;
+            padding: 15px 0;
+            margin: 10px 0;
+        }
+        .post h3 {
+            margin: 0;
+            color: #4a4a4a;
+            font-weight: bold;
+        }
+        .post p {
+            margin: 8px 0 0;
+            color: #4a4a4a;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Réseau Social Élégance</h1>
+    </header>
+    <div class="container" id="auth">
+        <h2>Connexion</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+            <button type="submit">Se connecter</button>
+        </form>
+    </div>
+
+    <div class="container" id="postForm" style="display: none;">
+        <h2>Créer une publication</h2>
+        <textarea id="message" placeholder="Quoi de neuf ?"></textarea>
+        <button id="postButton">Publier</button>
+        <h2>Publications</h2>
+        <div id="posts"></div>
+    </div>
+
+    <script>
+        // Vérifier si l'utilisateur est connecté
+        const authContainer = document.getElementById('auth');
+        const postFormContainer = document.getElementById('postForm');
+        const postsContainer = document.getElementById('posts');
+        const usernameInput = document.getElementById('username');
+        const loginForm = document.getElementById('loginForm');
+        const postButton = document.getElementById('postButton');
+        const messageInput = document.getElementById('message');
+
+        // Vérifier si un utilisateur est connecté
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+            authContainer.style.display = 'none';
+            postFormContainer.style.display = 'block';
+            loadPosts();
+        }
+
+        // Connexion
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = usernameInput.value.trim();
+            if (username) {
+                localStorage.setItem('currentUser', username);
+                authContainer.style.display = 'none';
+                postFormContainer.style.display = 'block';
+                loadPosts();
+            }
+        });
+
+        // Publier un message
+        postButton.addEventListener('click', () => {
+            const message = messageInput.value.trim();
+            if (message) {
+                const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+                posts.push({ username: localStorage.getItem('currentUser'), message });
+                localStorage.setItem('posts', JSON.stringify(posts));
+                messageInput.value = '';
+                loadPosts();
+            }
+        });
+
+        // Charger les publications
+        function loadPosts() {
+            postsContainer.innerHTML = '';
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            posts.reverse().forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.classList.add('post');
+                postElement.innerHTML = `
+                    <h3>${post.username}</h3>
+                    <p>${post.message}</p>
+                `;
+                postsContainer.appendChild(postElement);
+            });
+        }
+    </script>
+</body>
+</html>
